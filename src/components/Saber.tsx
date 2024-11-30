@@ -27,9 +27,25 @@ export const SaberMesh: React.FC<{
     ? [position[0] + 0.015, position[1], position[2]]
     : [position[0] - 0.015, position[1], position[2]];
 
+  const BLADE_LENGTH = 0.73;
+  const HANDLE_LENGTH = 0.15;
+  const RADIUS = 0.02;
+
+  // Calculate handle offset based on rotation
+  const handleOffset = BLADE_LENGTH / 2 + HANDLE_LENGTH / 2;
+  const rotationX = rotation[0];
+  const handlePosition: [number, number, number] = [0, Math.sin(rotationX) * handleOffset, Math.cos(rotationX) * handleOffset + 0.31];
+
   return (
-    <mesh ref={ref} position={positionProp} rotation={rotation}>
-      <Cylinder args={[0.02, 0.02, 0.93, 32]} material-color={color} />
-    </mesh>
+    <group position={positionProp} rotation={rotation}>
+      {/* Blade */}
+      <mesh ref={ref}>
+        <Cylinder args={[RADIUS, RADIUS, BLADE_LENGTH, 32]} material-color={color} />
+      </mesh>
+      {/* Handle */}
+      <mesh position={handlePosition}>
+        <Cylinder args={[RADIUS * 1.2, RADIUS * 1.2, HANDLE_LENGTH, 32]} material-color="black" />
+      </mesh>
+    </group>
   );
 };
