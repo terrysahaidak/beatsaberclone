@@ -27,51 +27,83 @@ export function useComponentControls(
 
 export type ArrowDirection = 'left' | 'right' | 'up' | 'down';
 
-const cache = new Map<ArrowDirection, THREE.CanvasTexture>();
+const cache = new Map<`${ArrowDirection}-${number}`, THREE.CanvasTexture>();
 
-export const createArrowTexture = (direction: ArrowDirection) => {
-  if (cache.has(direction)) {
-    return cache.get(direction)!;
+const drawArrow = (ctx: CanvasRenderingContext2D, size: number, direction: ArrowDirection) => {
+  const center = size / 2;
+  const arrowWidth = size * 0.8;  // 80% of canvas width
+  const arrowHeight = size * 0.1; // 30% of canvas height
+  
+  ctx.save();
+  ctx.translate(center, center);
+
+  switch (direction) {
+    case 'up':
+      ctx.translate(0, size / 2 - size * 0.15);
+      // Draw upward pointing arrow
+      ctx.beginPath();
+      ctx.moveTo(0, -arrowHeight * 1.5);          // Top point
+      ctx.lineTo(-arrowWidth/2, arrowHeight/2);   // Bottom left
+      ctx.lineTo(arrowWidth/2, arrowHeight/2);    // Bottom right
+      break;
+    case 'down':
+      ctx.translate(0, -size / 2 + size * 0.15);
+      // Draw downward pointing arrow
+      ctx.beginPath();
+      ctx.moveTo(0, arrowHeight * 1.5);           // Bottom point
+      ctx.lineTo(-arrowWidth/2, -arrowHeight/2);  // Top left
+      ctx.lineTo(arrowWidth/2, -arrowHeight/2);   // Top right
+      break;
+    case 'left':
+      // Draw leftward pointing arrow
+      ctx.translate(size / 2 - size * 0.1, 0);
+      ctx.beginPath();
+      ctx.moveTo(-arrowHeight * 1.5, 0);          // Left point
+      ctx.lineTo(arrowHeight/2, -arrowWidth/2);   // Top right
+      ctx.lineTo(arrowHeight/2, arrowWidth/2);    // Bottom right
+      break;
+    case 'right':
+      // Draw rightward pointing arrow
+      ctx.translate(-size / 2 + size * 0.1, 0);
+      ctx.beginPath();
+      ctx.moveTo(arrowHeight * 1.5, 0);           // Right point
+      ctx.lineTo(-arrowHeight/2, -arrowWidth/2);  // Top left
+      ctx.lineTo(-arrowHeight/2, arrowWidth/2);   // Bottom left
+      break;
+  }
+
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
+};
+
+export const createArrowTexture = (direction: ArrowDirection, boxSize: number) => {
+  const cacheKey = `${direction}-${boxSize}` as const;
+  if (cache.has(cacheKey)) {
+    return cache.get(cacheKey)!;
   }
 
   const canvas = document.createElement('canvas');
-  canvas.width = 64;
-  canvas.height = 64;
+  const size = 256;
+  canvas.width = size;
+  canvas.height = size;
   const ctx = canvas.getContext('2d')!;
 
   // Clear canvas
-  ctx.fillStyle = 'transparent';
-  ctx.fillRect(0, 0, 64, 64);
+  ctx.fillStyle = 'rgba(0, 0, 0, 0)';
+  ctx.fillRect(0, 0, size, size);
 
-  // Draw arrow
+  // Set arrow style
   ctx.fillStyle = 'white';
   ctx.strokeStyle = 'white';
-  ctx.lineWidth = 4;
-  
-  ctx.save();
-  ctx.translate(32, 32);
-  
-  // Rotate context based on direction
-  const rotation = {
-    up: 0,
-    right: Math.PI / 2,
-    down: Math.PI,
-    left: -Math.PI / 2,
-  }[direction];
-  
-  ctx.rotate(rotation);
+  ctx.lineWidth = 8;
 
-  // Draw arrow
-  ctx.beginPath();
-  ctx.moveTo(0, -20);
-  ctx.lineTo(-15, 10);
-  ctx.lineTo(15, 10);
-  ctx.closePath();
-  ctx.fill();
-  
-  ctx.restore();
+  // Draw the arrow in the proper direction
+  drawArrow(ctx, size, direction);
 
   const texture = new THREE.CanvasTexture(canvas);
-  cache.set(direction, texture);
+  texture.needsUpdate = true;
+  cache.set(cacheKey, texture);
   return texture;
 };
