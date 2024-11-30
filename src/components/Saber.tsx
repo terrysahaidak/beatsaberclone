@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import * as THREE from 'three';
 import { Cylinder } from '@react-three/drei';
 import { LEFT_HAND_COLOR, RIGHT_HAND_COLOR } from '../constants';
-import { boxBoundingBox, calculateSaberBoundingBox, gameStore, onLeftCollisionListeners, onRightCollisionListeners } from '../store';
+import { gameStore } from '../store';
 import { useFrame } from '@react-three/fiber';
 
 export const SaberMesh: React.FC<{

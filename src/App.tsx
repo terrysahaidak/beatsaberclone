@@ -27,9 +27,7 @@ export default function App() {
         <Physics>
           <XR store={xrStore}>
             <XROrigin>
-              <ambientLight intensity={0.5} />
-              <directionalLight position={[5, 5, 5]} intensity={1} castShadow />
-              <directionalLight position={[-5, 5, -5]} intensity={0.5} />
+              <directionalLight position={[5, 5, 5]} intensity={1} />
 
               <FloorCross />
 
