@@ -19,3 +19,17 @@ export const VALID_POSITIONS = [
   14,
   15, // Bottom row (lower)
 ];
+
+export const Direction = {
+  UP: 0,
+  DOWN: 1,
+  LEFT: 2,
+  RIGHT: 3,
+  UP_LEFT: 4,
+  UP_RIGHT: 5,
+  DOWN_LEFT: 6,
+  DOWN_RIGHT: 7,
+  ANY: 8,
+} as const;
+
+export type Direction = (typeof Direction)[keyof typeof Direction];

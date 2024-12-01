@@ -2,7 +2,7 @@ import { Canvas } from '@react-three/fiber';
 import { createXRStore, XR, XROrigin } from '@react-three/xr';
 import { Physics } from '@react-three/cannon';
 import { gameStore } from './store';
-import { Box } from './components/Box';
+import { Block } from './components/Block';
 import { FloorCross } from './components/FloorCross';
 import { SaberMesh } from './components/Saber';
 
@@ -31,8 +31,8 @@ export default function App() {
 
               <FloorCross />
 
-              {gameStore.boxes.map((box) => (
-                <Box key={box.gridPosition} model={box} />
+              {gameStore.blocks.map((block) => (
+                <Block key={block.gridPosition} model={block} />
               ))}
             </XROrigin>
           </XR>
