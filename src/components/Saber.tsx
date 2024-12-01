@@ -2,13 +2,13 @@ import { useRef } from 'react';
 import * as THREE from 'three';
 import { Cylinder } from '@react-three/drei';
 import { LEFT_HAND_COLOR, RIGHT_HAND_COLOR } from '../constants';
-import { gameStore } from '../store';
+import { gameStore } from '../store/store';
 import { useFrame } from '@react-three/fiber';
 
 export const SaberMesh: React.FC<{
   isRightHand: boolean;
-  position: [number, number, number];
-  rotation: [number, number, number];
+  position: THREE.Vector3Tuple;
+  rotation: THREE.Vector3Tuple;
 }> = ({ isRightHand, position, rotation }) => {
   const ref = useRef<THREE.Mesh>(null);
 
@@ -28,13 +28,13 @@ export const SaberMesh: React.FC<{
     : [position[0] - 0.015, position[1], position[2]];
 
   const BLADE_LENGTH = 0.73;
-  const HANDLE_LENGTH = 0.15;
+  const HANDLE_LENGTH = 0.25;
   const RADIUS = 0.02;
 
   // Calculate handle offset based on rotation
   const handleOffset = BLADE_LENGTH / 2 + HANDLE_LENGTH / 2;
   const rotationX = rotation[0];
-  const handlePosition: [number, number, number] = [0, Math.sin(rotationX) * handleOffset, Math.cos(rotationX) * handleOffset + 0.31];
+  const handlePosition: [number, number, number] = [0, Math.sin(rotationX) * handleOffset, Math.cos(rotationX) * handleOffset + 0.344];
 
   return (
     <group position={positionProp} rotation={rotation}>
