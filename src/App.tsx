@@ -3,14 +3,10 @@ import { createXRStore, XR, XROrigin } from '@react-three/xr';
 import { Physics } from '@react-three/cannon';
 import { FloorCross } from './components/FloorCross';
 import { SaberMesh } from './components/Saber';
-import { Scene } from './components/Scene';
-import { useState } from 'react';
 import { BLADE_POSITION } from './constants';
 import { gameStore } from './store/store';
-import song from './assets/demo/song.ogg?url';
-import songMap from './assets/demo/Normal.json';
-import info from './assets/demo/Info.json';
-import { Beatmap } from './types';
+import { observer } from 'mobx-react';
+import { Router } from './components/Router';
 
 export const xrStore = createXRStore({
   controller: {
@@ -24,16 +20,15 @@ export const xrStore = createXRStore({
   handTracking: false,
 });
 
-export default function App() {
-  const [isReady, setIsReady] = useState(false);
-
+const App = observer(function App() {
   async function enterAR() {
-    if (gameStore.howl) return;
+    if (gameStore.state !== 'loading') {
+      return;
+    }
 
     xrStore.enterAR();
 
-    await gameStore.loadSong(song, info, songMap as Beatmap);
-    setIsReady(true);
+    gameStore.onReady();
   }
 
   return (
@@ -49,11 +44,13 @@ export default function App() {
 
               <FloorCross />
 
-              {isReady && <Scene />}
+              <Router />
             </XROrigin>
           </XR>
         </Physics>
       </Canvas>
     </>
   );
-}
+});
+
+export default App;

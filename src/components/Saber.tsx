@@ -4,12 +4,21 @@ import { Cylinder } from '@react-three/drei';
 import { LEFT_HAND_COLOR, RIGHT_HAND_COLOR } from '../constants';
 import { gameStore } from '../store/store';
 import { useFrame } from '@react-three/fiber';
+import { useXRControllerButtonEvent, useXRInputSourceStateContext } from '@react-three/xr';
 
 export const SaberMesh: React.FC<{
   isRightHand: boolean;
   position: THREE.Vector3Tuple;
   rotation: THREE.Vector3Tuple;
 }> = ({ isRightHand, position, rotation }) => {
+  const state = useXRInputSourceStateContext('controller');
+  // Handle trigger press event to spawn a bullet
+  useXRControllerButtonEvent(state, 'xr-standard-trigger', (state) => {
+    if (state === 'pressed' && isRightHand) {
+      gameStore.onTriggerPress();
+    }
+  });
+
   const ref = useRef<THREE.Mesh>(null);
 
   useFrame(() => {
