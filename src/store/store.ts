@@ -24,6 +24,8 @@ export class GameStore {
     // new BlockModel({ index: 3, layer: 2, cutDirection: Direction.ANY, type: 1, time: 3 }, this),
   ];
 
+  hitCount = 0;
+  totalNotesCount = 0;
   saberBoxBoundingBoxes = new THREE.Box3();
 
   currentPosition = 0;
@@ -130,8 +132,9 @@ export class GameStore {
   private _cursor = 0;
 
   loadMap(info: BeatmapInfo, map: Beatmap) {
-    this._sortedBlocks = map._notes.sort((a, b) => a._time - b._time).filter((note) => note._type !== 3);
+    this._sortedBlocks = map._notes.sort((a, b) => a._time - b._time);
     this.songBpm = info._beatsPerMinute;
+    this.totalNotesCount = map._notes.reduce((acc, note) => (note._type !== 3 ? acc + 1 : acc), 0);
 
     // load only first blocks
     for (const note of this._sortedBlocks) {
@@ -160,8 +163,10 @@ export class GameStore {
     return this.blocks[this.blocks.length - 1].time;
   }
 
-  onCollision(block: BlockModel) {
-    console.log('Collision with block', block.id);
+  onCollision(block: BlockModel, shouldCount: boolean) {
+    if (shouldCount) {
+      this.hitCount++;
+    }
   }
 
   calculateCollisions(hand: 'left' | 'right', saberMesh: THREE.Mesh) {
@@ -175,7 +180,7 @@ export class GameStore {
     blocksToTest.forEach((block) => {
       const isCorrectHand = (block.type === 0 && hand === 'left') || (block.type === 1 && hand === 'right');
 
-      block.testCollision(this.saberBoxBoundingBoxes);
+      block.testCollision(this.saberBoxBoundingBoxes, isCorrectHand);
     });
   }
 }

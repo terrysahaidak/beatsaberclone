@@ -52,7 +52,7 @@ export class BlockModel implements BlockProps {
     this.boxBoundingBox.setFromObject(mesh);
   }
 
-  testCollision(saberBox: THREE.Box3) {
+  testCollision(saberBox: THREE.Box3, shouldCount: boolean) {
     if (!this.canTestCollision || this.hasBeenHit) return;
 
     const intersects = this.boxBoundingBox.intersectsBox(saberBox);
@@ -60,7 +60,7 @@ export class BlockModel implements BlockProps {
       this.hasBeenHit = true;
       this.onCollisionCallback();
 
-      this.root.onCollision(this);
+      this.root.onCollision(this, this.type === 3 ? false : shouldCount);
     }
   }
 

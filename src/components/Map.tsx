@@ -111,7 +111,7 @@ export const Map = observer(function Map() {
 
       {gameStore.state === 'map-end' && (
         <Text color={0xffa276} fontSize={0.3} position={[0, 2, -3]}>
-          Song ended
+          Song ended ({gameStore.hitCount}/{gameStore.totalNotesCount})
         </Text>
       )}
 
