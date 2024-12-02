@@ -54,7 +54,7 @@ export function getRotationForDirection(direction: Direction) {
   }
 }
 
-export function getPositionForBlock(note: BlockModel, beatDepth: number) {
+export function getPositionForBlock(note: BlockModel) {
   const x = note.index * BLOCK_COLUMN_WIDTH - BLOCK_COLUMN_WIDTH * 1.5;
   const y = note.layer * BLOCK_COLUMN_WIDTH - BLOCK_COLUMN_WIDTH;
 

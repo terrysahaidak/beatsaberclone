@@ -14,7 +14,7 @@ export function useObject(path: string) {
 
   if (!existing) {
     // If this is the first request for the object, start loading it.
-    loadingMap[path] = new Promise((resolve, reject) => {
+    loadingMap[path] = new Promise((resolve) => {
       new OBJLoader().load(path, (result) => {
         resolve(result);
       });

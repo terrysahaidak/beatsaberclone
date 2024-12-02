@@ -163,7 +163,7 @@ export class GameStore {
     return this.blocks[this.blocks.length - 1].time;
   }
 
-  onCollision(block: BlockModel, shouldCount: boolean) {
+  onCollision(_block: BlockModel, shouldCount: boolean) {
     if (shouldCount) {
       this.hitCount++;
     }

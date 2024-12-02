@@ -36,7 +36,7 @@ export const Block = observer(function Block({ model }: { model: BlockModel }) {
 
   const rotation: THREE.Vector3Tuple = [0, 0, getRotationForDirection(model.cutDirection)];
 
-  const { x, y, z } = getPositionForBlock(model, 1);
+  const { x, y, z } = getPositionForBlock(model);
 
   useEffect(() => {
     model.setOnCollisionCallback(() => {

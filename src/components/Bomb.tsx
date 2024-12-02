@@ -5,7 +5,7 @@ import { useSpring, animated } from '@react-spring/three';
 import { BlockModel } from '../store/BlockModel';
 import { useObject } from '../hooks/useObject';
 import bomb from '../assets/bomb.obj?url';
-import { getPositionForBlock, getRotationForDirection } from '../utils';
+import { getPositionForBlock } from '../utils';
 import { observer } from 'mobx-react';
 
 const SCALE_FACTOR = 0.3;
@@ -31,7 +31,7 @@ export const Bomb = observer(function Bomb({ model }: { model: BlockModel }) {
 
   const rotation: THREE.Vector3Tuple = [Math.random(), Math.random(), Math.random()];
 
-  const { x, y, z } = getPositionForBlock(model, 1);
+  const { x, y, z } = getPositionForBlock(model);
 
   useEffect(() => {
     model.setOnCollisionCallback(() => {
