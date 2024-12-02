@@ -1,10 +1,11 @@
 import { useRef } from 'react';
 import * as THREE from 'three';
-import { Cylinder } from '@react-three/drei';
 import { LEFT_HAND_COLOR, RIGHT_HAND_COLOR } from '../constants';
 import { gameStore } from '../store/store';
 import { useFrame } from '@react-three/fiber';
 import { useXRControllerButtonEvent, useXRInputSourceStateContext } from '@react-three/xr';
+import { useObject } from '../hooks/useObject';
+import saberObj from '../assets/saber.obj?url';
 
 export const SaberMesh: React.FC<{
   isRightHand: boolean;
@@ -36,24 +37,30 @@ export const SaberMesh: React.FC<{
     ? [position[0] + 0.015, position[1], position[2]]
     : [position[0] - 0.015, position[1], position[2]];
 
-  const BLADE_LENGTH = 0.73;
-  const HANDLE_LENGTH = 0.25;
-  const RADIUS = 0.02;
+  const group = useObject(saberObj);
 
-  // Calculate handle offset based on rotation
-  const handleOffset = BLADE_LENGTH / 2 + HANDLE_LENGTH / 2;
-  const rotationX = rotation[0];
-  const handlePosition: [number, number, number] = [0, Math.sin(rotationX) * handleOffset, Math.cos(rotationX) * handleOffset + 0.344];
+  if (!group) {
+    return null;
+  }
+
+  const saberGeometry = (group.children[0] as THREE.Mesh).geometry;
+  const handle1Geometry = (group.children[1] as THREE.Mesh).geometry;
+  const handle2Geometry = (group.children[2] as THREE.Mesh).geometry;
 
   return (
     <group position={positionProp} rotation={rotation}>
       {/* Blade */}
       <mesh ref={ref}>
-        <Cylinder args={[RADIUS, RADIUS, BLADE_LENGTH, 32]} material-color={color} />
+        <primitive object={saberGeometry} attach="geometry" />
+        <meshStandardMaterial attach="material" color={color} emissive={color} />
       </mesh>
-      {/* Handle */}
-      <mesh position={handlePosition}>
-        <Cylinder args={[RADIUS * 1.2, RADIUS * 1.2, HANDLE_LENGTH, 32]} material-color="black" />
+      <mesh>
+        <primitive object={handle2Geometry} />
+        <meshStandardMaterial metalness={1} roughness={1} color={0x000000} />
+      </mesh>
+      <mesh>
+        <primitive object={handle1Geometry} />
+        <meshStandardMaterial metalness={0.1} roughness={1} color={0x000000} />
       </mesh>
     </group>
   );

@@ -6,7 +6,7 @@ import { BlockModel } from './BlockModel';
 import { COLLISION_START_Z } from '../constants';
 
 export class GameStore {
-  state: 'loading' | 'menu' | 'pause' | 'playing' | 'loading-map' = 'loading';
+  state: 'loading' | 'menu' | 'map-pause' | 'map-playing' | 'map-loading' | 'map-loaded' | 'map-end' = 'loading';
 
   blocks: BlockModel[] = [
     // block testing
@@ -41,7 +41,9 @@ export class GameStore {
       blocks: observable,
       state: observable,
       onTriggerPress: action,
-      play: action,
+      onMapPlay: action,
+      onMapReady: action,
+      onMapEnd: action,
     });
   }
 
@@ -49,15 +51,15 @@ export class GameStore {
     this.state = 'menu';
   }
 
-  setOnPlay(callback: () => void) {
+  setOnMapPlay(callback: () => void) {
     this.onPlay = callback;
   }
 
-  setOnPause(callback: () => void) {
+  setOnMapPause(callback: () => void) {
     this.onPause = callback;
   }
 
-  setOnReset(callback: () => void) {
+  setOnMapReset(callback: () => void) {
     this.onReset = callback;
   }
 
@@ -65,15 +67,17 @@ export class GameStore {
     console.log('on trigger', this.state);
 
     if (this.state === 'menu') {
-      this.state = 'loading-map';
-    } else if (this.state === 'playing') {
-      this.state = 'pause';
+      this.state = 'map-loading';
+    } else if (this.state === 'map-playing') {
+      this.state = 'map-pause';
 
       this.onPause?.();
-    } else if (this.state === 'pause') {
-      this.state = 'playing';
+    } else if (this.state === 'map-pause') {
+      this.state = 'map-playing';
 
       this.onReset?.();
+    } else if (this.state === 'map-loaded') {
+      this.onMapPlay();
     }
   }
 
@@ -113,10 +117,18 @@ export class GameStore {
     }
   }
 
-  play() {
-    this.state = 'playing';
+  onMapPlay() {
+    this.state = 'map-playing';
 
     this.onPlay?.();
+  }
+
+  onMapReady() {
+    this.state = 'map-loaded';
+  }
+
+  onMapEnd() {
+    this.state = 'map-end';
   }
 
   getLastBlockTime() {

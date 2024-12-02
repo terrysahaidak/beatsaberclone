@@ -1,9 +1,9 @@
 import { Canvas } from '@react-three/fiber';
-import { createXRStore, XR, XROrigin } from '@react-three/xr';
+import { createXRStore, XR, XROrigin, XRSpace } from '@react-three/xr';
 import { Physics } from '@react-three/cannon';
 import { FloorCross } from './components/FloorCross';
 import { SaberMesh } from './components/Saber';
-import { BLADE_POSITION } from './constants';
+import { BLADE_POSITION, BLADE_ROTATION } from './constants';
 import { gameStore } from './store/store';
 import { observer } from 'mobx-react';
 import { Router } from './components/Router';
@@ -11,17 +11,30 @@ import { Router } from './components/Router';
 export const xrStore = createXRStore({
   controller: {
     right: () => {
-      return <SaberMesh isRightHand position={BLADE_POSITION} rotation={[2.35, 0, 0]} />;
+      // const { rotation, position } = useComponentControls('Saber', BLADE_POSITION, BLADE_ROTATION);
+
+      return (
+        <>
+          <XRSpace space="grip-space">
+            <SaberMesh isRightHand position={BLADE_POSITION} rotation={BLADE_ROTATION} />
+          </XRSpace>
+          {/* <XRControllerModel /> */}
+        </>
+      );
     },
     left: () => {
-      return <SaberMesh isRightHand={false} position={BLADE_POSITION} rotation={[2.35, 0, 0]} />;
+      return (
+        <XRSpace space="grip-space">
+          <SaberMesh isRightHand={false} position={BLADE_POSITION} rotation={BLADE_ROTATION} />
+        </XRSpace>
+      );
     },
   },
   handTracking: false,
 });
 
 const App = observer(function App() {
-  async function enterAR() {
+  function enterAR() {
     if (gameStore.state !== 'loading') {
       return;
     }
@@ -31,11 +44,19 @@ const App = observer(function App() {
     gameStore.onReady();
   }
 
+  // useEffect(() => {
+  // setTimeout(() => {
+  //   enterAR();
+  // }, 500);
+  // }, []);
+
   return (
     <>
-      <button className="vr-button" onClick={enterAR}>
-        Enter AR
-      </button>
+      {gameStore.state === 'loading' && (
+        <button className="vr-button" onClick={enterAR}>
+          Enter AR
+        </button>
+      )}
       <Canvas camera={{ fov: 45 }}>
         <Physics>
           <XR store={xrStore}>

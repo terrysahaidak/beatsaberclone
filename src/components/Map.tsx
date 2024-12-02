@@ -48,7 +48,11 @@ export const Map = observer(function Map() {
 
       console.log('End position:', endPosition);
 
-      gameStore.setOnPlay(() => {
+      audio.once('end', () => {
+        gameStore.onMapEnd();
+      });
+
+      gameStore.setOnMapPlay(() => {
         audio.play();
         console.log('on play');
         api.start({
@@ -61,21 +65,21 @@ export const Map = observer(function Map() {
         });
       });
 
-      gameStore.setOnPause(() => {
+      gameStore.setOnMapPause(() => {
         audio.pause();
         api.stop();
       });
 
-      gameStore.setOnReset(() => {
+      gameStore.setOnMapReset(() => {
         audio.stop();
 
         api.set({ position: 0 });
         requestAnimationFrame(() => {
-          gameStore.play();
+          gameStore.onMapPlay();
         });
       });
 
-      gameStore.play();
+      gameStore.onMapReady();
     };
 
     run();
@@ -87,13 +91,19 @@ export const Map = observer(function Map() {
 
   return (
     <XROrigin>
-      {gameStore.state === 'loading-map' && (
+      {gameStore.state === 'map-loading' && (
         <Text color={0xffa276} fontSize={0.3} position={[0, 2, -3]}>
           Loading...
         </Text>
       )}
 
-      {(gameStore.state === 'playing' || gameStore.state === 'pause') && (
+      {gameStore.state === 'map-loaded' && (
+        <Text color={0xffa276} fontSize={0.3} position={[0, 2, -3]}>
+          Press trigger to start
+        </Text>
+      )}
+
+      {(gameStore.state === 'map-playing' || gameStore.state === 'map-pause') && (
         <animated.group position={styles.position.to((v) => [0, 1.2, v])}>
           {gameStore.blocks.map((block) => (
             <Block key={block.id.toString()} model={block} />
@@ -101,7 +111,13 @@ export const Map = observer(function Map() {
         </animated.group>
       )}
 
-      {gameStore.state === 'pause' && (
+      {gameStore.state === 'map-end' && (
+        <Text color={0xffa276} fontSize={0.3} position={[0, 2, -3]}>
+          Song ended
+        </Text>
+      )}
+
+      {gameStore.state === 'map-pause' && (
         <Text color={0xffa276} fontSize={0.3} position={[0, 2, -3]}>
           Press again to reset
         </Text>

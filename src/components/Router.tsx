@@ -9,9 +9,7 @@ export const Router = observer(function Router() {
       return null;
     case 'menu':
       return <Menu text="Press trigger to start" />;
-    case 'loading-map':
-    case 'playing':
-    case 'pause':
+    default:
       return <Map />;
   }
 });

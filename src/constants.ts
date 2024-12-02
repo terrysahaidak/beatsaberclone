@@ -8,5 +8,6 @@ export const BOX_SIZE = 0.5;
 export const BLOCK_COLUMN_WIDTH = BOX_SIZE;
 export const SONG_OFFSET = 0;
 
-export const BLADE_POSITION = [0, 0.24, -0.21] as Vector3Tuple;
+export const BLADE_POSITION = [0, 0.01, 0.15] as Vector3Tuple;
+export const BLADE_ROTATION = [-1.6, 0, 0.07] as Vector3Tuple;
 export const COLLISION_START_Z = 3;
