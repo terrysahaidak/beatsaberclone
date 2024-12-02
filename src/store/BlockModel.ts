@@ -4,32 +4,40 @@ import { roundAwayFloatingPointNonsense } from '../utils';
 import { GameStore } from './store';
 
 let _id = 0;
-export class BlockModel {
+
+interface BlockProps {
+  index: number;
+  layer: number;
+  cutDirection: Direction;
+  type: number;
+  time: number;
+  initial: boolean;
+}
+export class BlockModel implements BlockProps {
   root: GameStore;
 
   canTestCollision: boolean = false;
   hasBeenHit: boolean = false;
 
   id: number;
-  cutDirection: Direction;
   index: number;
   layer: number;
+  cutDirection: Direction;
   type: number;
   time: number;
+  initial: boolean;
 
   onCollisionCallback = () => {};
 
   boxBoundingBox: THREE.Box3;
   collisionCallbacks: Set<{ id: number; callback: () => void }> = new Set();
 
-  constructor(
-    { index, layer, cutDirection, type, time }: { index: number; layer: number; cutDirection: Direction; type: number; time: number },
-    root: GameStore
-  ) {
+  constructor({ index, layer, cutDirection, type, time, initial }: BlockProps, root: GameStore) {
     this.id = _id++;
 
     this.boxBoundingBox = new THREE.Box3();
 
+    this.initial = initial;
     this.cutDirection = cutDirection;
     this.index = index;
     this.layer = layer;

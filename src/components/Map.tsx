@@ -1,6 +1,5 @@
 import { observer } from 'mobx-react';
 import { gameStore } from '../store/store';
-import { Block } from './Block';
 import { animated, useSpring } from '@react-spring/three';
 import { useEffect } from 'react';
 import { XROrigin } from '@react-three/xr';
@@ -10,6 +9,7 @@ import songMap from '../assets/demo/Normal.json';
 import info from '../assets/demo/Info.json';
 import { Beatmap } from '../types';
 import { Howl } from 'howler';
+import { Blocks } from './Blocks';
 
 const loadAudio = (url: string): Promise<Howl> => {
   return new Promise((resolve) => {
@@ -105,9 +105,7 @@ export const Map = observer(function Map() {
 
       {(gameStore.state === 'map-playing' || gameStore.state === 'map-pause') && (
         <animated.group position={styles.position.to((v) => [0, 1.2, v])}>
-          {gameStore.blocks.map((block) => (
-            <Block key={block.id.toString()} model={block} />
-          ))}
+          <Blocks />
         </animated.group>
       )}
 

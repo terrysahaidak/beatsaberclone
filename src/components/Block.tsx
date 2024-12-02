@@ -20,7 +20,12 @@ export const Block = observer(function Block({ model }: { model: BlockModel }) {
   const color = model.type === 1 ? RIGHT_HAND_COLOR : LEFT_HAND_COLOR;
 
   const [springs, springsApi] = useSpring(() => ({
-    scale: SCALE_FACTOR,
+    from: {
+      scale: model.initial ? SCALE_FACTOR : 0,
+    },
+    to: {
+      scale: SCALE_FACTOR,
+    },
     config: {
       tension: 170,
       friction: 26,

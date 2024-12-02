@@ -1,9 +1,9 @@
 import * as THREE from 'three';
-import { Beatmap, BeatmapInfo, Direction } from '../types';
+import { Beatmap, BeatmapInfo, Direction, Note } from '../types';
 import { makeObservable, observable, action } from 'mobx';
 import { Howl } from 'howler';
 import { BlockModel } from './BlockModel';
-import { COLLISION_START_Z } from '../constants';
+import { BLOCK_SPAWN_POSITION, COLLISION_START_Z } from '../constants';
 
 export class GameStore {
   state: 'loading' | 'menu' | 'map-pause' | 'map-playing' | 'map-loading' | 'map-loaded' | 'map-end' = 'loading';
@@ -44,6 +44,7 @@ export class GameStore {
       onMapPlay: action,
       onMapReady: action,
       onMapEnd: action,
+      setCurrentPosition: action,
     });
   }
 
@@ -95,25 +96,48 @@ export class GameStore {
         block.canTestCollision = false;
       }
     });
+
+    // load more blocks
+    const nextCursor = this._cursor + 1;
+    const nextNote = this._sortedBlocks[nextCursor];
+
+    if (nextNote && nextNote._time <= this.currentPosition + BLOCK_SPAWN_POSITION) {
+      this.pushBlock(nextNote);
+      this._cursor++;
+    }
+
+    // remove invisible blocks
+    this.blocks = this.blocks.filter((block) => block.time > this.currentPosition - 1);
   }
 
+  pushBlock(note: Note, initial = false) {
+    this.blocks.push(
+      new BlockModel(
+        {
+          initial: initial,
+          index: note._lineIndex,
+          layer: note._lineLayer,
+          cutDirection: note._cutDirection as Direction,
+          type: note._type,
+          time: note._time,
+        },
+        this
+      )
+    );
+  }
+
+  private _sortedBlocks: Note[] = [];
+  private _cursor = 0;
+
   loadMap(info: BeatmapInfo, map: Beatmap) {
-    const sorted = map._notes.sort((a, b) => a._time - b._time).filter((note) => note._type !== 3);
+    this._sortedBlocks = map._notes.sort((a, b) => a._time - b._time).filter((note) => note._type !== 3);
     this.songBpm = info._beatsPerMinute;
 
-    for (const note of sorted) {
-      this.blocks.push(
-        new BlockModel(
-          {
-            index: note._lineIndex,
-            layer: note._lineLayer,
-            cutDirection: note._cutDirection as Direction,
-            type: note._type,
-            time: note._time,
-          },
-          this
-        )
-      );
+    // load only first blocks
+    for (const note of this._sortedBlocks) {
+      if (note._time > BLOCK_SPAWN_POSITION) break;
+      this.pushBlock(note, true);
+      this._cursor++;
     }
   }
 

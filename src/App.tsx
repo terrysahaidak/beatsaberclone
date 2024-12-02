@@ -8,7 +8,7 @@ import { gameStore } from './store/store';
 import { observer } from 'mobx-react';
 import { Router } from './components/Router';
 
-export const xrStore = createXRStore({
+const xrStore = createXRStore({
   controller: {
     right: () => {
       // const { rotation, position } = useComponentControls('Saber', BLADE_POSITION, BLADE_ROTATION);
@@ -61,7 +61,7 @@ const App = observer(function App() {
         <Physics>
           <XR store={xrStore}>
             <XROrigin>
-              <directionalLight position={[5, 5, 5]} intensity={1} />
+              <directionalLight position={[5, 5, 5]} intensity={3} />
 
               <FloorCross />
 
