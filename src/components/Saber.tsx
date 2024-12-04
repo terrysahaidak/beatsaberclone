@@ -6,6 +6,7 @@ import { useFrame } from '@react-three/fiber';
 import { useXRControllerButtonEvent, useXRInputSourceStateContext } from '@react-three/xr';
 import { useObject } from '../hooks/useObject';
 import saberObj from '../assets/saber.obj?url';
+import { FakeGlowMaterial } from '../materials/FakeGlowMaterial';
 
 export const SaberMesh: React.FC<{
   isRightHand: boolean;
@@ -52,7 +53,8 @@ export const SaberMesh: React.FC<{
       {/* Blade */}
       <mesh ref={ref}>
         <primitive object={saberGeometry} attach="geometry" />
-        <meshStandardMaterial attach="material" color={color} emissive={color} />
+        <FakeGlowMaterial glowColor={color} falloff={0} glowSharpness={2} glowInternalRadius={2} depthTest opacity={1} side="THREE.DoubleSide" />
+        {/* <meshStandardMaterial attach="material" color={color} emissive={color} /> */}
       </mesh>
       <mesh>
         <primitive object={handle2Geometry} />
