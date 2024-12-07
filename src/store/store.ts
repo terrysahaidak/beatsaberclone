@@ -28,8 +28,13 @@ export class GameStore {
   totalNotesCount = 0;
   saberBoxBoundingBoxes = new THREE.Box3();
 
-  currentPosition = 0;
-  songBpm = 0;
+  // in meters
+  currentBeatTime = 0;
+  // in beats
+  bpm = 0;
+  // in meters per second
+  speed = 1;
+
   isPlaying = false;
 
   howl: Howl | null = null;
@@ -85,7 +90,7 @@ export class GameStore {
   }
 
   setCurrentPosition(position: number) {
-    this.currentPosition = position;
+    this.currentBeatTime = ((position / this.speed) * this.bpm) / 60;
 
     // Update block states based on current time
     this.blocks.forEach((block) => {
@@ -103,12 +108,14 @@ export class GameStore {
     const nextCursor = this._cursor + 1;
     const nextNote = this._sortedBlocks[nextCursor];
 
-    if (nextNote && nextNote._time <= this.currentPosition + BLOCK_SPAWN_POSITION) {
+    if (nextNote && nextNote._time <= this.currentBeatTime + BLOCK_SPAWN_POSITION) {
       this.pushBlock(nextNote);
       this._cursor++;
     }
 
     // remove invisible blocks
+    this.blocks = this.blocks.filter((block) => block.time > this.currentBeatTime - BLOCK_REMOVE_POSITION);
+    // remove invisible walls
     this.blocks = this.blocks.filter((block) => block.time > this.currentPosition - 1);
   }
 
@@ -133,13 +140,16 @@ export class GameStore {
 
   loadMap(info: BeatmapInfo, map: Beatmap) {
     this._sortedBlocks = map._notes.sort((a, b) => a._time - b._time);
-    this.songBpm = info._beatsPerMinute;
+    this.bpm = info._beatsPerMinute;
+    this.speed =
+      info._difficultyBeatmapSets[0]._difficultyBeatmaps[info._difficultyBeatmapSets[0]._difficultyBeatmaps.length - 1]._noteJumpMovementSpeed;
+    // this.speed = info._difficultyBeatmapSets[0]._difficultyBeatmaps[0]._noteJumpMovementSpeed;
     this.totalNotesCount = map._notes.reduce((acc, note) => (note._type !== 3 ? acc + 1 : acc), 0);
 
     // load only first blocks
-    for (const note of this._sortedBlocks) {
-      if (note._time > BLOCK_SPAWN_POSITION) break;
-      this.pushBlock(note, true);
+    for (const item of this._sortedBlocks) {
+      if (item._time > BLOCK_SPAWN_POSITION) break;
+      this.pushBlock(item, true);
       this._cursor++;
     }
   }

@@ -10,6 +10,7 @@ import info from '../assets/demo/Info.json';
 import { Beatmap } from '../types';
 import { Howl } from 'howler';
 import { Blocks } from './Blocks';
+import { SONG_OFFSET } from '../constants';
 
 const loadAudio = (url: string): Promise<Howl> => {
   return new Promise((resolve) => {
@@ -23,7 +24,7 @@ const loadAudio = (url: string): Promise<Howl> => {
 export const Map = observer(function Map() {
   const [styles, api] = useSpring(() => ({
     from: {
-      position: 0,
+      position: -SONG_OFFSET,
     },
     onChange: (result) => {
       gameStore.setCurrentPosition(result.value.position);
@@ -44,7 +45,7 @@ export const Map = observer(function Map() {
       console.log('Total blocks:', gameStore.blocks.length);
       console.log('Last block time:', gameStore.getLastBlockTime());
 
-      const endPosition = (duration / 60) * gameStore.songBpm;
+      const endPosition = duration * gameStore.speed;
 
       console.log('End position:', endPosition);
 
@@ -58,6 +59,9 @@ export const Map = observer(function Map() {
         api.start({
           config: {
             duration: duration * 1000,
+          },
+          from: {
+            position: 0,
           },
           to: {
             position: endPosition,
@@ -73,7 +77,7 @@ export const Map = observer(function Map() {
       gameStore.setOnMapReset(() => {
         audio.stop();
 
-        api.set({ position: 0 });
+        api.set({ position: -SONG_OFFSET });
         requestAnimationFrame(() => {
           gameStore.onMapPlay();
         });
@@ -104,7 +108,7 @@ export const Map = observer(function Map() {
       )}
 
       {(gameStore.state === 'map-playing' || gameStore.state === 'map-pause') && (
-        <animated.group position={styles.position.to((v) => [0, 1.2, v])}>
+        <animated.group position-y={1} position-z={styles.position.to((v) => v - SONG_OFFSET)}>
           <Blocks />
         </animated.group>
       )}

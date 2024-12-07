@@ -53,8 +53,6 @@ export const Bomb = observer(function Bomb({ model }: { model: BlockModel }) {
 
   const geometry = (group.children[0] as THREE.Mesh).geometry;
 
-  console.log(group);
-
   return (
     <animated.group ref={ref} scale={springs.scale} position={[x, y, z]} rotation={rotation}>
       <mesh ref={meshRef} scale={[SCALE_FACTOR, SCALE_FACTOR, SCALE_FACTOR]}>

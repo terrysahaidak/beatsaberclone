@@ -5,6 +5,12 @@ export interface Beatmap {
 export interface BeatmapInfo {
   _beatsPerMinute: number;
   _songTimeOffset: number;
+  _difficultyBeatmapSets: {
+    _difficultyBeatmaps: {
+      _difficulty: string;
+      _noteJumpMovementSpeed: number;
+    }[];
+  }[];
 }
 
 export const Direction = {

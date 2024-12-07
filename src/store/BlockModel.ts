@@ -47,6 +47,12 @@ export class BlockModel implements BlockProps {
     this.root = root;
   }
 
+  get zPosition() {
+    const timeInSeconds = (this.time * 60) / this.root.bpm;
+
+    return timeInSeconds * this.root.speed;
+  }
+
   calculateBoundingBox(mesh: THREE.Mesh) {
     mesh.updateMatrixWorld();
     this.boxBoundingBox.setFromObject(mesh);
