@@ -58,10 +58,10 @@ export function getPositionForBlock(note: BlockModel) {
   const x = note.index * BLOCK_COLUMN_WIDTH - BLOCK_COLUMN_WIDTH * 1.5;
   const y = note.layer * BLOCK_COLUMN_WIDTH - BLOCK_COLUMN_WIDTH;
 
-  const startingPosition = -note.time;
+  const startingPosition = -note.zPosition;
 
   // Next, take into account that the song is playing. `cursorPosition` will continue to grow, and we need to cursorPosition it by the right number of beats.
-  const z = startingPosition - SONG_OFFSET;
+  const z = startingPosition;
 
   return { x, y, z };
 }
