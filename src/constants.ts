@@ -6,6 +6,7 @@ export const RIGHT_HAND_COLOR = '#123bff';
 export const BOX_SIZE = 0.5;
 
 export const BLOCK_COLUMN_WIDTH = BOX_SIZE * 1.175;
+export const STAGE_WIDTH = BLOCK_COLUMN_WIDTH * 4;
 export const SONG_OFFSET = 0;
 
 export const BLADE_POSITION = [0, 0.01, 0.15] as Vector3Tuple;

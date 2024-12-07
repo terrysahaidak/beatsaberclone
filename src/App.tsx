@@ -9,6 +9,7 @@ import { observer } from 'mobx-react';
 import { Router } from './components/Router';
 
 const xrStore = createXRStore({
+  emulate: 'metaQuest3',
   controller: {
     right: () => {
       // const { rotation, position } = useComponentControls('Saber', BLADE_POSITION, BLADE_ROTATION);
@@ -66,8 +67,6 @@ const App = observer(function App() {
               <FloorCross />
 
               <Router />
-
-              {/* <DebugGrid /> */}
             </XROrigin>
           </XR>
         </Physics>

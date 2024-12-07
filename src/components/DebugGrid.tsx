@@ -23,7 +23,7 @@ function GridCell({ index, layer }: { index: number; layer: number }) {
 
 export function DebugGrid() {
   return (
-    <group position={[0, 1, -2]}>
+    <group position={[0, 1, 0]}>
       <GridCell index={0} layer={0} />
       <GridCell index={1} layer={0} />
       <GridCell index={2} layer={0} />

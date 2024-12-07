@@ -26,15 +26,21 @@ export class WallModel {
   }
 
   get x() {
-    return this.props.index * BLOCK_COLUMN_WIDTH - BLOCK_COLUMN_WIDTH * 1.5;
+    if (this.props.type === 0) {
+      return this.props.index * BLOCK_COLUMN_WIDTH - BLOCK_COLUMN_WIDTH * 1.5;
+    } else {
+      return 0;
+    }
   }
 
   get y() {
     switch (this.props.type) {
       case 0:
-        return 0;
+        return BLOCK_COLUMN_WIDTH / 2;
+      case 1:
+        return BLOCK_COLUMN_WIDTH;
       default:
-        return 0;
+        return;
     }
   }
 
@@ -45,13 +51,13 @@ export class WallModel {
   }
 
   get width() {
-    return this.props.width * BLOCK_COLUMN_WIDTH;
+    return (this.props.width - 1) * BLOCK_COLUMN_WIDTH + BOX_SIZE;
   }
 
   get height() {
     switch (this.props.type) {
       case 0:
-        return BOX_SIZE * 3;
+        return 3 * BLOCK_COLUMN_WIDTH + BOX_SIZE;
       default:
         return BOX_SIZE;
     }
