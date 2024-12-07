@@ -11,6 +11,7 @@ import { Beatmap } from '../types';
 import { Howl } from 'howler';
 import { Blocks } from './Blocks';
 import { SONG_OFFSET } from '../constants';
+import { Walls } from './Walls';
 
 const loadAudio = (url: string): Promise<Howl> => {
   return new Promise((resolve) => {
@@ -110,6 +111,7 @@ export const Map = observer(function Map() {
       {(gameStore.state === 'map-playing' || gameStore.state === 'map-pause') && (
         <animated.group position-y={1} position-z={styles.position.to((v) => v - SONG_OFFSET)}>
           <Blocks />
+          <Walls />
         </animated.group>
       )}
 

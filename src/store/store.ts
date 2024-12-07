@@ -1,9 +1,10 @@
 import * as THREE from 'three';
-import { Beatmap, BeatmapInfo, Direction, Note } from '../types';
+import { Beatmap, BeatmapInfo, Direction, Note, Obstacle } from '../types';
 import { makeObservable, observable, action } from 'mobx';
 import { Howl } from 'howler';
 import { BlockModel } from './BlockModel';
-import { BLOCK_SPAWN_POSITION, COLLISION_START_Z } from '../constants';
+import { BLOCK_REMOVE_POSITION, BLOCK_SPAWN_POSITION } from '../constants';
+import { WallModel } from './WallModel';
 
 export class GameStore {
   state: 'loading' | 'menu' | 'map-pause' | 'map-playing' | 'map-loading' | 'map-loaded' | 'map-end' = 'loading';
@@ -23,6 +24,8 @@ export class GameStore {
     // new BlockModel({ index: 2, layer: 2, cutDirection: Direction.ANY, type: 0, time: 3 }, this),
     // new BlockModel({ index: 3, layer: 2, cutDirection: Direction.ANY, type: 1, time: 3 }, this),
   ];
+
+  walls: WallModel[] = [];
 
   hitCount = 0;
   totalNotesCount = 0;
@@ -46,6 +49,7 @@ export class GameStore {
   constructor() {
     makeObservable(this, {
       blocks: observable,
+      walls: observable,
       state: observable,
       onTriggerPress: action,
       onMapPlay: action,
@@ -92,17 +96,18 @@ export class GameStore {
   setCurrentPosition(position: number) {
     this.currentBeatTime = ((position / this.speed) * this.bpm) / 60;
 
+    // TODO: Fix collisions
     // Update block states based on current time
-    this.blocks.forEach((block) => {
-      // Calculate block's current Z position based on time
-      const z = block.time - this.currentPosition;
+    // this.blocks.forEach((block) => {
+    //   // Calculate block's current Z position based on time
+    //   const z = block.time - this.currentBeatTime;
 
-      if (z > 0 && z <= COLLISION_START_Z && !block.hasBeenHit) {
-        block.canTestCollision = true;
-      } else {
-        block.canTestCollision = false;
-      }
-    });
+    //   if (z > 0 && z <= COLLISION_START_Z && !block.hasBeenHit) {
+    //     block.canTestCollision = true;
+    //   } else {
+    //     block.canTestCollision = false;
+    //   }
+    // });
 
     // load more blocks
     const nextCursor = this._cursor + 1;
@@ -113,10 +118,19 @@ export class GameStore {
       this._cursor++;
     }
 
+    // load more walls
+    const nextWallsCursor = this._wallsCursor + 1;
+    const nextWalls = this._sortedWalls[nextWallsCursor];
+
+    if (nextWalls && nextWalls._time <= this.currentBeatTime + BLOCK_SPAWN_POSITION) {
+      this.pushWall(nextWalls);
+      this._wallsCursor++;
+    }
+
     // remove invisible blocks
     this.blocks = this.blocks.filter((block) => block.time > this.currentBeatTime - BLOCK_REMOVE_POSITION);
     // remove invisible walls
-    this.blocks = this.blocks.filter((block) => block.time > this.currentPosition - 1);
+    this.walls = this.walls.filter((item) => item.props.time + item.props.duration > this.currentBeatTime - BLOCK_REMOVE_POSITION);
   }
 
   pushBlock(note: Note, initial = false) {
@@ -135,11 +149,31 @@ export class GameStore {
     );
   }
 
+  pushWall(obstacle: Obstacle, initial = false) {
+    this.walls.push(
+      new WallModel(
+        {
+          initial: initial,
+          duration: obstacle._duration,
+          index: obstacle._lineIndex,
+          type: obstacle._type,
+          width: obstacle._width,
+          time: obstacle._time,
+        },
+        this
+      )
+    );
+  }
+
   private _sortedBlocks: Note[] = [];
   private _cursor = 0;
 
+  private _sortedWalls: Obstacle[] = [];
+  private _wallsCursor = 0;
+
   loadMap(info: BeatmapInfo, map: Beatmap) {
     this._sortedBlocks = map._notes.sort((a, b) => a._time - b._time);
+    this._sortedWalls = map._obstacles.sort((a, b) => a._time - b._time);
     this.bpm = info._beatsPerMinute;
     this.speed =
       info._difficultyBeatmapSets[0]._difficultyBeatmaps[info._difficultyBeatmapSets[0]._difficultyBeatmaps.length - 1]._noteJumpMovementSpeed;
@@ -151,6 +185,12 @@ export class GameStore {
       if (item._time > BLOCK_SPAWN_POSITION) break;
       this.pushBlock(item, true);
       this._cursor++;
+    }
+    // load only first blocks
+    for (const item of this._sortedWalls) {
+      if (item._time > BLOCK_SPAWN_POSITION) break;
+      this.pushWall(item, true);
+      this._wallsCursor++;
     }
   }
 

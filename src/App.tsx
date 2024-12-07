@@ -66,6 +66,8 @@ const App = observer(function App() {
               <FloorCross />
 
               <Router />
+
+              {/* <DebugGrid /> */}
             </XROrigin>
           </XR>
         </Physics>

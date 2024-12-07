@@ -1,5 +1,14 @@
 export interface Beatmap {
   _notes: Note[];
+  _obstacles: Obstacle[];
+}
+
+export interface Obstacle {
+  _time: number;
+  _duration: number;
+  _lineIndex: number;
+  _type: number;
+  _width: number;
 }
 
 export interface BeatmapInfo {
