@@ -93,21 +93,25 @@ export class GameStore {
     }
   }
 
+  beatsDuration(beats: number) {
+    return (60 / this.bpm) * beats * 1000;
+  }
+
   setCurrentPosition(position: number) {
     this.currentBeatTime = ((position / this.speed) * this.bpm) / 60;
 
-    // TODO: Fix collisions
-    // Update block states based on current time
-    // this.blocks.forEach((block) => {
-    //   // Calculate block's current Z position based on time
-    //   const z = block.time - this.currentBeatTime;
+    this.blocks.forEach((block) => {
+      // Calculate block's current Z position based on time
+      const z = block.time - this.currentBeatTime;
 
-    //   if (z > 0 && z <= COLLISION_START_Z && !block.hasBeenHit) {
-    //     block.canTestCollision = true;
-    //   } else {
-    //     block.canTestCollision = false;
-    //   }
-    // });
+      if (z < 1.5) {
+        if (!block.hasBeenHit) {
+          block.canTestCollision = true;
+        }
+
+        block.shouldRotate = true;
+      }
+    });
 
     // load more blocks
     const nextCursor = this._cursor + 1;

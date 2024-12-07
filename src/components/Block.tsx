@@ -10,6 +10,7 @@ import blockCenter from '../assets/block-center.obj?url';
 import { Direction } from '../types';
 import { getPositionForBlock, getRotationForDirection } from '../utils';
 import { observer } from 'mobx-react';
+import { gameStore } from '../store/store';
 
 const SCALE_FACTOR = 1;
 
@@ -26,11 +27,13 @@ export const Block = observer(function Block({ model }: { model: BlockModel }) {
     from: {
       y: 0,
       rotationZ: 0,
+      rotationY: 0,
       scale: model.initial ? SCALE_FACTOR : 0,
     },
     to: {
       y,
       rotationZ,
+      rotationY: 0,
       scale: SCALE_FACTOR,
     },
     config: {
@@ -38,6 +41,18 @@ export const Block = observer(function Block({ model }: { model: BlockModel }) {
       friction: 26,
     },
   }));
+
+  const { rotationY } = useSpring({
+    from: {
+      rotationY: 0,
+    },
+    to: {
+      rotationY: model.shouldRotate ? model.rotationY : 0,
+    },
+    config: {
+      duration: gameStore.beatsDuration(2),
+    },
+  });
 
   const group = useObject(model.cutDirection === Direction.ANY ? blockCenter : blockDirectional);
 
@@ -62,7 +77,7 @@ export const Block = observer(function Block({ model }: { model: BlockModel }) {
   const geometry = (group.children[0] as THREE.Mesh).geometry;
 
   return (
-    <animated.group ref={ref} scale={springs.scale} position={springs.y.to((v) => [x, v, z])} rotation-z={springs.rotationZ}>
+    <animated.group ref={ref} scale={springs.scale} position={springs.y.to((v) => [x, v, z])} rotation-z={springs.rotationZ} rotation-y={rotationY}>
       {/* <mesh ref={meshRef}>
         <planeGeometry args={[BOX_SIZE, BOX_SIZE]} />
         <meshStandardMaterial color={color} />
@@ -72,7 +87,7 @@ export const Block = observer(function Block({ model }: { model: BlockModel }) {
         <primitive object={geometry} attach="geometry" />
         <meshStandardMaterial transparent attach="material" metalness={0.5} roughness={0.4} color={color} />
       </mesh>
-      <mesh scale={0.9}>
+      <mesh position-z={0.22} scale={0.8}>
         <planeGeometry attach="geometry" args={[BOX_SIZE, BOX_SIZE]} />
         <meshLambertMaterial attach="material" emissive={0xffffff} />
       </mesh>

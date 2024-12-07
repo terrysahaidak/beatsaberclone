@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { Direction } from '../types';
-import { roundAwayFloatingPointNonsense } from '../utils';
 import { GameStore } from './store';
+import { makeObservable, observable } from 'mobx';
 
 let _id = 0;
 
@@ -27,6 +27,8 @@ export class BlockModel implements BlockProps {
   time: number;
   initial: boolean;
 
+  shouldRotate: boolean = false;
+
   onCollisionCallback = () => {};
 
   boxBoundingBox: THREE.Box3;
@@ -42,7 +44,11 @@ export class BlockModel implements BlockProps {
     this.index = index;
     this.layer = layer;
     this.type = type;
-    this.time = roundAwayFloatingPointNonsense(time);
+    this.time = time;
+
+    makeObservable(this, {
+      shouldRotate: observable,
+    });
 
     this.root = root;
   }
@@ -51,6 +57,10 @@ export class BlockModel implements BlockProps {
     const timeInSeconds = (this.time * 60) / this.root.bpm;
 
     return timeInSeconds * this.root.speed;
+  }
+
+  get rotationY() {
+    return this.index < 2 ? 0.25 : -0.25;
   }
 
   calculateBoundingBox(mesh: THREE.Mesh) {
