@@ -4,8 +4,7 @@ export const LEFT_HAND_COLOR = '#ff000c';
 export const RIGHT_HAND_COLOR = '#123bff';
 
 export const BOX_SIZE = 0.35;
-export const PLAYER_HEIGHT = 1.6;
-export const PLAYER_Y_OFFSET = PLAYER_HEIGHT / 2;
+export const PLAYER_Y_OFFSET = 0.5;
 
 export const STAGE_WIDTH = 3;
 export const STAGE_LENGTH = 2;
