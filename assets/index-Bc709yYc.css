@@ -1,0 +1,1 @@
+*{box-sizing:border-box}html,body,#root{width:100%;height:100%;margin:0;padding:0;background:#000}.vr-button{position:absolute;z-index:10000;background:#000;border-radius:.5rem;border:none;font-weight:700;color:#fff;padding:1rem 2rem;cursor:pointer;font-size:1.5rem;bottom:1rem;left:50%;box-shadow:0 0 20px #000;transform:translate(-50%)}
