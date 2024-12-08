@@ -234,6 +234,8 @@ export class GameStore {
 
     const boundingBox = this.sabers.getBoundingBox(hand);
 
+    if (!boundingBox) return;
+
     blocksToTest.forEach((block) => {
       const isCorrectHand = (block.type === 0 && hand === 'left') || (block.type === 1 && hand === 'right');
 
