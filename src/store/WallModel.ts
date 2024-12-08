@@ -1,5 +1,5 @@
 import { GameStore } from './store';
-import { GRID_CELL_SIZE, BOX_SIZE, GRID_HEIGHT, GRID_PADDING } from '../constants';
+import { GRID_CELL_SIZE, GRID_PADDING } from '../constants';
 
 let _id = 0;
 
@@ -40,7 +40,7 @@ export class WallModel {
       case 1:
         return GRID_CELL_SIZE * 4 - GRID_PADDING;
       default:
-        return;
+        return 0;
     }
   }
 

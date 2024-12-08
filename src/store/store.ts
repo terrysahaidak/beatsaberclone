@@ -1,4 +1,3 @@
-import * as THREE from 'three';
 import { Beatmap, BeatmapInfo, Direction, Note, Obstacle } from '../types';
 import { makeObservable, observable, action } from 'mobx';
 import { Howl } from 'howler';

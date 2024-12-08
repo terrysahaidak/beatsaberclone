@@ -184,7 +184,7 @@ export function SparksPlane({ duration, onComplete }: SparksPlaneProps): JSX.Ele
     }
   }, [duration]);
 
-  useFrame(({ clock }) => {
+  useFrame(() => {
     if (!materialRef.current) return;
 
     const material = materialRef.current;

@@ -94,6 +94,7 @@ export const FakeGlowMaterial = ({
   extend({ FakeGlowMaterial });
 
   return (
+    // @ts-expect-error - Ignore this error.
     <fakeGlowMaterial
       key={FakeGlowMaterial.key}
       side={side}
