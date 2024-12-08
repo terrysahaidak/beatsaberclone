@@ -1,5 +1,5 @@
 import { GameStore } from './store';
-import { BLOCK_COLUMN_WIDTH, BOX_SIZE } from '../constants';
+import { GRID_CELL_SIZE, BOX_SIZE, GRID_HEIGHT, GRID_PADDING } from '../constants';
 
 let _id = 0;
 
@@ -27,18 +27,18 @@ export class WallModel {
 
   get x() {
     if (this.props.type === 0) {
-      return this.props.index * BLOCK_COLUMN_WIDTH - BLOCK_COLUMN_WIDTH * 1.5;
+      return this.props.index * GRID_CELL_SIZE;
     } else {
-      return 0;
+      return GRID_PADDING + GRID_CELL_SIZE;
     }
   }
 
   get y() {
     switch (this.props.type) {
       case 0:
-        return BLOCK_COLUMN_WIDTH / 2;
+        return 0.6;
       case 1:
-        return BLOCK_COLUMN_WIDTH;
+        return GRID_CELL_SIZE * 4 - GRID_PADDING;
       default:
         return;
     }
@@ -51,15 +51,15 @@ export class WallModel {
   }
 
   get width() {
-    return (this.props.width - 1) * BLOCK_COLUMN_WIDTH + BOX_SIZE;
+    return this.props.width * GRID_CELL_SIZE;
   }
 
   get height() {
     switch (this.props.type) {
       case 0:
-        return 3 * BLOCK_COLUMN_WIDTH + BOX_SIZE;
+        return 5 * GRID_CELL_SIZE;
       default:
-        return BOX_SIZE;
+        return GRID_CELL_SIZE * 4;
     }
   }
 

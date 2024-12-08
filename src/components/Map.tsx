@@ -10,9 +10,8 @@ import info from '../assets/demo/Info.json';
 import { Beatmap } from '../types';
 import { Howl } from 'howler';
 import { Blocks } from './Blocks';
-import { SONG_OFFSET, STAGE_WIDTH } from '../constants';
+import { GRID_PADDING, GRID_X, PLAYER_Y_OFFSET, SONG_OFFSET } from '../constants';
 import { Walls } from './Walls';
-import { DebugGrid } from './DebugGrid';
 
 const loadAudio = (url: string): Promise<Howl> => {
   return new Promise((resolve) => {
@@ -102,35 +101,26 @@ export const Map = observer(function Map() {
           Loading...
         </Text>
       )}
-
       {gameStore.state === 'map-loaded' && (
         <Text color={0xffa276} fontSize={0.3} position={[0, 2, -3]}>
           Press trigger to start
         </Text>
       )}
-
-      <group position-z={-2}>
-        <DebugGrid />
-
-        <mesh>
-          <boxGeometry args={[STAGE_WIDTH, 0.1, 20]} />
-          <meshBasicMaterial color="black" transparent opacity={0.5} />
-        </mesh>
-
+      <group position-x={GRID_X} position-y={GRID_PADDING + PLAYER_Y_OFFSET}>
         {(gameStore.state === 'map-playing' || gameStore.state === 'map-pause') && (
-          <animated.group position-y={1} position-z={styles.position.to((v) => v - SONG_OFFSET)}>
+          <animated.group position-z={styles.position.to((v) => v - SONG_OFFSET)}>
             <Blocks />
             <Walls />
           </animated.group>
         )}
-      </group>
 
+        {/* <DebugGrid position={[0, 0, -8]} /> */}
+      </group>
       {gameStore.state === 'map-end' && (
         <Text color={0xffa276} fontSize={0.3} position={[0, 2, -3]}>
           Song ended ({gameStore.hitCount}/{gameStore.totalNotesCount})
         </Text>
       )}
-
       {gameStore.state === 'map-pause' && (
         <Text color={0xffa276} fontSize={0.3} position={[0, 2, -3]}>
           Press again to reset

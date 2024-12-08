@@ -79,15 +79,15 @@ export const Block = observer(function Block({ model }: { model: BlockModel }) {
   return (
     <animated.group ref={ref} scale={springs.scale} position={springs.y.to((v) => [x, v, z])} rotation-z={springs.rotationZ} rotation-y={rotationY}>
       {/* <mesh ref={meshRef}>
-        <planeGeometry args={[BOX_SIZE, BOX_SIZE]} />
-        <meshStandardMaterial color={color} />
+        <boxGeometry args={[BOX_SIZE, BOX_SIZE, BOX_SIZE]} />
+        <meshStandardMaterial color="white" />
       </mesh> */}
 
-      <mesh ref={meshRef} scale={[0.25, 0.25, 0.5]}>
+      <mesh ref={meshRef} scale={[0.195, 0.195, 0.39]}>
         <primitive object={geometry} attach="geometry" />
         <meshStandardMaterial transparent attach="material" metalness={0.5} roughness={0.4} color={color} />
       </mesh>
-      <mesh position-z={0.22} scale={0.8}>
+      <mesh position-z={0.18} scale={0.8}>
         <planeGeometry attach="geometry" args={[BOX_SIZE, BOX_SIZE]} />
         <meshLambertMaterial attach="material" emissive={0xffffff} />
       </mesh>

@@ -5,8 +5,11 @@ import { Howl } from 'howler';
 import { BlockModel } from './BlockModel';
 import { BLOCK_REMOVE_POSITION, BLOCK_SPAWN_POSITION } from '../constants';
 import { WallModel } from './WallModel';
+import SabersStore from './SabersStore';
 
 export class GameStore {
+  sabers: SabersStore;
+
   state: 'loading' | 'menu' | 'map-pause' | 'map-playing' | 'map-loading' | 'map-loaded' | 'map-end' = 'loading';
 
   blocks: BlockModel[] = [
@@ -29,7 +32,6 @@ export class GameStore {
 
   hitCount = 0;
   totalNotesCount = 0;
-  saberBoxBoundingBoxes = new THREE.Box3();
 
   // in meters
   currentBeatTime = 0;
@@ -47,6 +49,8 @@ export class GameStore {
   onReset: (() => void) | null = null;
 
   constructor() {
+    this.sabers = new SabersStore();
+
     makeObservable(this, {
       blocks: observable,
       walls: observable,
@@ -179,9 +183,9 @@ export class GameStore {
     this._sortedBlocks = map._notes.sort((a, b) => a._time - b._time);
     this._sortedWalls = map._obstacles.sort((a, b) => a._time - b._time);
     this.bpm = info._beatsPerMinute;
-    this.speed =
-      info._difficultyBeatmapSets[0]._difficultyBeatmaps[info._difficultyBeatmapSets[0]._difficultyBeatmaps.length - 1]._noteJumpMovementSpeed;
-    // this.speed = info._difficultyBeatmapSets[0]._difficultyBeatmaps[0]._noteJumpMovementSpeed;
+    // this.speed =
+    //   info._difficultyBeatmapSets[0]._difficultyBeatmaps[info._difficultyBeatmapSets[0]._difficultyBeatmaps.length - 1]._noteJumpMovementSpeed;
+    this.speed = info._difficultyBeatmapSets[0]._difficultyBeatmaps[0]._noteJumpMovementSpeed;
     this.totalNotesCount = map._notes.reduce((acc, note) => (note._type !== 3 ? acc + 1 : acc), 0);
 
     // load only first blocks
@@ -192,7 +196,7 @@ export class GameStore {
     }
     // load only first blocks
     for (const item of this._sortedWalls) {
-      if (item._time > BLOCK_SPAWN_POSITION) break;
+      // if (item._time > BLOCK_SPAWN_POSITION) break;
       this.pushWall(item, true);
       this._wallsCursor++;
     }
@@ -217,24 +221,26 @@ export class GameStore {
     return this.blocks[this.blocks.length - 1].time;
   }
 
-  onCollision(_block: BlockModel, shouldCount: boolean) {
+  onCollision(_block: BlockModel, shouldCount: boolean, hand: 'left' | 'right') {
     if (shouldCount) {
       this.hitCount++;
     }
+
+    this.sabers.onHitVibration(hand);
   }
 
-  calculateCollisions(hand: 'left' | 'right', saberMesh: THREE.Mesh) {
-    const blocksToTest = this.blocks.filter((block) => block.canTestCollision && !block.hasBeenHit);
+  calculateCollisions(hand: 'left' | 'right') {
+    this.sabers.calculateCollisions(hand);
 
+    const blocksToTest = this.blocks.filter((block) => block.canTestCollision && !block.hasBeenHit);
     if (blocksToTest.length === 0) return;
 
-    saberMesh.updateMatrixWorld();
-    this.saberBoxBoundingBoxes.setFromObject(saberMesh);
+    const boundingBox = hand === 'left' ? this.sabers.leftSaberBoxBoundingBoxes : this.sabers.rightSaberBoxBoundingBoxes;
 
     blocksToTest.forEach((block) => {
       const isCorrectHand = (block.type === 0 && hand === 'left') || (block.type === 1 && hand === 'right');
 
-      block.testCollision(this.saberBoxBoundingBoxes, isCorrectHand);
+      block.testCollision(boundingBox, isCorrectHand, hand);
     });
   }
 }

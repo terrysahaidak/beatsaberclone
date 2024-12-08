@@ -1,29 +1,23 @@
 import * as THREE from 'three';
-import { BOX_SIZE } from '../constants';
-import { getPositionForBlock } from '../utils';
+import { GRID_CELL_SIZE, GRID_PADDING, GRID_X } from '../constants';
 
 function GridCell({ index, layer }: { index: number; layer: number }) {
-  const geometry = new THREE.PlaneGeometry(BOX_SIZE, BOX_SIZE);
+  const geometry = new THREE.PlaneGeometry(GRID_CELL_SIZE, GRID_CELL_SIZE);
 
-  const { x, y, z } = getPositionForBlock({
-    index,
-    layer,
-    zPosition: 0,
-  });
+  const x = index * GRID_CELL_SIZE;
+  const y = layer * GRID_CELL_SIZE;
 
   return (
-    <group position={[x, y, z]}>
-      <lineSegments>
-        <edgesGeometry args={[geometry]} />
-        <lineBasicMaterial color="black" />
-      </lineSegments>
-    </group>
+    <lineSegments position={[x, y, 0]}>
+      <edgesGeometry args={[geometry]} />
+      <lineBasicMaterial color="white" />
+    </lineSegments>
   );
 }
 
-export function DebugGrid() {
+export function DebugGrid({ position }: { position?: THREE.Vector3Tuple }) {
   return (
-    <group position={[0, 1, 0]}>
+    <group position={position ?? [GRID_X, GRID_PADDING, -8]}>
       <GridCell index={0} layer={0} />
       <GridCell index={1} layer={0} />
       <GridCell index={2} layer={0} />

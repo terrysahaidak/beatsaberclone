@@ -68,7 +68,7 @@ export class BlockModel implements BlockProps {
     this.boxBoundingBox.setFromObject(mesh);
   }
 
-  testCollision(saberBox: THREE.Box3, shouldCount: boolean) {
+  testCollision(saberBox: THREE.Box3, shouldCount: boolean, hand: 'left' | 'right') {
     if (!this.canTestCollision || this.hasBeenHit) return;
 
     const intersects = this.boxBoundingBox.intersectsBox(saberBox);
@@ -76,7 +76,7 @@ export class BlockModel implements BlockProps {
       this.hasBeenHit = true;
       this.onCollisionCallback();
 
-      this.root.onCollision(this, this.type === 3 ? false : shouldCount);
+      this.root.onCollision(this, this.type === 3 ? false : shouldCount, hand);
     }
   }
 
