@@ -50,7 +50,7 @@ export const Block = observer(function Block({ model }: { model: BlockModel }) {
       rotationY: model.shouldRotate ? model.rotationY : 0,
     },
     config: {
-      duration: gameStore.beatsDuration(2),
+      duration: gameStore.currentSong.beatsDuration(2),
     },
   });
 

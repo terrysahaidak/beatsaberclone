@@ -28,33 +28,35 @@ export const Map = observer(function Map() {
       position: -SONG_OFFSET,
     },
     onChange: (result) => {
-      gameStore.setCurrentPosition(result.value.position);
+      gameStore.currentSong.setCurrentPosition(result.value.position);
     },
   }));
 
   console.log(gameStore.state);
 
   useEffect(() => {
-    const run = async () => {
-      gameStore.loadMap(info, songMap as Beatmap);
+    let audio: Howl;
 
-      const audio = await loadAudio(song);
+    const run = async () => {
+      gameStore.currentSong.loadMap(info, songMap as Beatmap);
+
+      audio = await loadAudio(song);
 
       const duration = audio.duration();
 
       console.log('Starting song, duration:', duration);
-      console.log('Total blocks:', gameStore.blocks.length);
-      console.log('Last block time:', gameStore.getLastBlockTime());
+      console.log('Total blocks:', gameStore.currentSong.blocks.length);
+      console.log('Last block time:', gameStore.currentSong.getLastBlockTime());
 
-      const endPosition = duration * gameStore.speed;
+      const endPosition = duration * gameStore.currentSong.speed;
 
       console.log('End position:', endPosition);
 
       audio.once('end', () => {
-        gameStore.onMapEnd();
+        gameStore.currentSong.onMapEnd();
       });
 
-      gameStore.setOnMapPlay(() => {
+      gameStore.currentSong.setOnMapPlay(() => {
         audio.play();
         console.log('on play');
         api.start({
@@ -70,27 +72,28 @@ export const Map = observer(function Map() {
         });
       });
 
-      gameStore.setOnMapPause(() => {
+      gameStore.currentSong.setOnMapPause(() => {
         audio.pause();
         api.stop();
       });
 
-      gameStore.setOnMapReset(() => {
+      gameStore.currentSong.setOnMapReset(() => {
         audio.stop();
 
         api.set({ position: -SONG_OFFSET });
         requestAnimationFrame(() => {
-          gameStore.onMapPlay();
+          gameStore.currentSong.onMapPlay();
         });
       });
 
-      gameStore.onMapReady();
+      gameStore.currentSong.onMapReady();
     };
 
     run();
 
     return () => {
-      gameStore.howl?.stop();
+      audio?.stop();
+      audio?.unload();
     };
   }, []);
 
@@ -118,7 +121,7 @@ export const Map = observer(function Map() {
       </group>
       {gameStore.state === 'map-end' && (
         <Text color={0xffa276} fontSize={0.3} position={[0, 2, -3]}>
-          Song ended ({gameStore.hitCount}/{gameStore.totalNotesCount})
+          Song ended ({gameStore.currentSong.hitCount}/{gameStore.currentSong.totalNotesCount})
         </Text>
       )}
       {gameStore.state === 'map-pause' && (

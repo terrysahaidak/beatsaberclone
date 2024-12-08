@@ -54,9 +54,9 @@ export class BlockModel implements BlockProps {
   }
 
   get zPosition() {
-    const timeInSeconds = (this.time * 60) / this.root.bpm;
+    const timeInSeconds = (this.time * 60) / this.root.currentSong.bpm;
 
-    return timeInSeconds * this.root.speed;
+    return timeInSeconds * this.root.currentSong.speed;
   }
 
   get rotationY() {
@@ -76,7 +76,7 @@ export class BlockModel implements BlockProps {
       this.hasBeenHit = true;
       this.onCollisionCallback();
 
-      this.root.onCollision(this, this.type === 3 ? false : shouldCount, hand);
+      this.root.currentSong.onCollision(this, this.type === 3 ? false : shouldCount, hand);
     }
   }
 

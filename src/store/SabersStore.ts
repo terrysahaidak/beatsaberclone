@@ -1,5 +1,6 @@
 import { action, makeObservable, observable } from 'mobx';
 import * as THREE from 'three';
+import { GameStore } from './store';
 
 class SabersStore {
   leftSaberMesh: THREE.Mesh | null = null;
@@ -26,7 +27,11 @@ class SabersStore {
   _leftHapticActuator: GamepadHapticActuator | null = null;
   _rightHapticActuator: GamepadHapticActuator | null = null;
 
-  constructor() {
+  root: GameStore;
+
+  constructor(root: GameStore) {
+    this.root = root;
+
     this.rightSaberBoxBoundingBoxes = new THREE.Box3();
     this.leftSaberBoxBoundingBoxes = new THREE.Box3();
 

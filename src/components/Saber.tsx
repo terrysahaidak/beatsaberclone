@@ -26,9 +26,9 @@ export const SaberMesh = observer(function ({
     gameStore.sabers.setSaber(isRightHand ? 'right' : 'left', ref.current!);
 
     if (isRightHand) {
-      gameStore.calculateCollisions('right');
+      gameStore.currentSong.calculateCollisions('right');
     } else {
-      gameStore.calculateCollisions('left');
+      gameStore.currentSong.calculateCollisions('left');
     }
   });
 

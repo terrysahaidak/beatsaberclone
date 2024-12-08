@@ -6,7 +6,7 @@ import { Bomb } from './Bomb';
 export const Blocks = observer(function Blocks() {
   return (
     <>
-      {gameStore.blocks.map((block) =>
+      {gameStore.currentSong.blocks.map((block) =>
         block.type === 3 ? <Bomb key={block.id.toString()} model={block} /> : <Block key={block.id.toString()} model={block} />
       )}
     </>

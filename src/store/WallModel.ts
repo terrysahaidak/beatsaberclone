@@ -45,9 +45,9 @@ export class WallModel {
   }
 
   get z() {
-    const timeInSeconds = (this.props.time * 60) / this.root.bpm;
+    const timeInSeconds = (this.props.time * 60) / this.root.currentSong.bpm;
 
-    return timeInSeconds * this.root.speed * -1;
+    return timeInSeconds * this.root.currentSong.speed * -1;
   }
 
   get width() {
@@ -64,6 +64,6 @@ export class WallModel {
   }
 
   get depth() {
-    return (this.props.duration * 60) / this.root.bpm;
+    return (this.props.duration * 60) / this.root.currentSong.bpm;
   }
 }

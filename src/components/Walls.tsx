@@ -5,7 +5,7 @@ import { Wall } from './Wall';
 export const Walls = observer(function Walls() {
   return (
     <>
-      {gameStore.walls.map((item) => (
+      {gameStore.currentSong.walls.map((item) => (
         <Wall key={item.id.toString()} model={item} />
       ))}
     </>
