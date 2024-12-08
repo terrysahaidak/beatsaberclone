@@ -60,19 +60,33 @@ class SabersStore {
     }
   }
 
+  getBoundingBox(hand: 'left' | 'right') {
+    if (hand === 'left') {
+      if (!this.leftSaberMesh) {
+        return null;
+      }
+
+      this.leftSaberMesh!.updateMatrixWorld(true);
+
+      this.leftSaberBoxBoundingBoxes.setFromObject(this.leftSaberMesh);
+
+      return this.leftSaberBoxBoundingBoxes;
+    }
+
+    if (!this.rightSaberMesh) {
+      return null;
+    }
+
+    this.rightSaberMesh!.updateMatrixWorld(true);
+
+    this.rightSaberBoxBoundingBoxes.setFromObject(this.rightSaberMesh);
+
+    return this.rightSaberBoxBoundingBoxes;
+  }
+
   calculateCollisions(hand: 'left' | 'right') {
-    const saberMesh = hand === 'right' ? this.rightSaberMesh : this.leftSaberMesh;
-    if (!saberMesh || !this.leftSaberMesh || !this.rightSaberMesh) return { intersects: false, point1: null, point2: null };
+    this.getBoundingBox(hand);
 
-    // Update matrices
-    this.leftSaberMesh.updateMatrixWorld(true);
-    this.rightSaberMesh.updateMatrixWorld(true);
-
-    // Get the correct bounding box reference
-    const currentBox = hand === 'right' ? this.rightSaberBoxBoundingBoxes : this.leftSaberBoxBoundingBoxes;
-    currentBox.setFromObject(saberMesh);
-
-    // Broad phase check with bounding boxes
     if (!this.rightSaberBoxBoundingBoxes.intersectsBox(this.leftSaberBoxBoundingBoxes)) {
       this.sabersCollided = false;
       return { intersects: false, point1: null, point2: null };

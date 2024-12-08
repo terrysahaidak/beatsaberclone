@@ -229,12 +229,10 @@ export class GameStore {
   }
 
   calculateCollisions(hand: 'left' | 'right') {
-    this.sabers.calculateCollisions(hand);
-
     const blocksToTest = this.blocks.filter((block) => block.canTestCollision && !block.hasBeenHit);
     if (blocksToTest.length === 0) return;
 
-    const boundingBox = hand === 'left' ? this.sabers.leftSaberBoxBoundingBoxes : this.sabers.rightSaberBoxBoundingBoxes;
+    const boundingBox = this.sabers.getBoundingBox(hand);
 
     blocksToTest.forEach((block) => {
       const isCorrectHand = (block.type === 0 && hand === 'left') || (block.type === 1 && hand === 'right');
