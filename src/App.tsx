@@ -1,21 +1,34 @@
 import { Canvas } from '@react-three/fiber';
-import { createXRStore, useXRControllerButtonEvent, useXRInputSourceStateContext, XR, XROrigin, XRSpace } from '@react-three/xr';
+import {
+  createXRStore,
+  DefaultXRController,
+  noEvents,
+  PointerEvents,
+  useXRControllerButtonEvent,
+  useXRInputSourceStateContext,
+  XR,
+  XROrigin,
+  XRSpace,
+} from '@react-three/xr';
 import { Physics } from '@react-three/cannon';
 import { FloorCross } from './components/FloorCross';
 import { SaberMesh } from './components/Saber';
 import {
   BLADE_POSITION,
   BLADE_ROTATION,
-  SPAWN_STAGE_LENGTH,
-  SPAWN_STAGE_POSITION_Z,
-  SPAWN_STAGE_WIDTH,
-  STAGE_LENGTH,
-  STAGE_WIDTH,
+  // SPAWN_STAGE_LENGTH,
+  // SPAWN_STAGE_POSITION_Z,
+  // SPAWN_STAGE_WIDTH,
+  // STAGE_LENGTH,
+  // STAGE_WIDTH,
 } from './constants';
 import { gameStore } from './store/store';
 import { observer } from 'mobx-react';
 import { Router } from './components/Router';
 import { useEffect } from 'react';
+import { setPreferredColorScheme } from '@react-three/uikit';
+
+setPreferredColorScheme('light');
 
 function useController(hand: 'left' | 'right') {
   const inputState = useXRInputSourceStateContext('controller');
@@ -34,29 +47,41 @@ function useController(hand: 'left' | 'right') {
 
   // Handle trigger press event to spawn a bullet
   useXRControllerButtonEvent(inputState, 'xr-standard-trigger', (state) => {
-    if (state === 'pressed' && hand === 'right') {
-      gameStore.onTriggerPress();
-    }
+    // console.log('Trigger state:', state);
+    // if (state === 'pressed' && hand === 'right') {
+    //   console.log('Trigger pressed');
+    //   gameStore.onTriggerPress();
+    // }
   });
 }
 
 const xrStore = createXRStore({
   emulate: 'metaQuest3',
   controller: {
+    rayPointer: true,
     right: function RightController() {
       // const { rotation, position } = useComponentControls('Saber', BLADE_POSITION, BLADE_ROTATION);
       useController('right');
+
+      if (gameStore.state === 'menu' || gameStore.state === 'map-pause') {
+        return <DefaultXRController />;
+      }
+
       return (
         <>
           <XRSpace space="grip-space">
             <SaberMesh isRightHand position={BLADE_POSITION} rotation={BLADE_ROTATION} />
           </XRSpace>
-          {/* <XRControllerModel /> */}
         </>
       );
     },
     left: function LeftController() {
       useController('left');
+
+      if (gameStore.state === 'menu' || gameStore.state === 'map-pause') {
+        return <DefaultXRController />;
+      }
+
       return (
         <XRSpace space="grip-space">
           <SaberMesh isRightHand={false} position={BLADE_POSITION} rotation={BLADE_ROTATION} />
@@ -64,7 +89,8 @@ const xrStore = createXRStore({
       );
     },
   },
-  handTracking: false,
+  // handTracking: false,
+  frameBufferScaling: 2.0,
 });
 
 const App = observer(function App() {
@@ -91,7 +117,9 @@ const App = observer(function App() {
           Enter AR
         </button>
       )}
-      <Canvas camera={{ fov: 45 }}>
+      <Canvas events={noEvents} camera={{ fov: 45 }}>
+        <PointerEvents batchEvents={false} />
+
         <Physics>
           <XR store={xrStore}>
             <XROrigin>
@@ -102,7 +130,7 @@ const App = observer(function App() {
               <XROrigin>
                 {/* <DebugGrid /> */}
 
-                <mesh>
+                {/* <mesh>
                   <boxGeometry args={[STAGE_WIDTH, 0.01, STAGE_LENGTH]} />
                   <meshBasicMaterial color="white" transparent opacity={0.7} />
                 </mesh>
@@ -110,7 +138,7 @@ const App = observer(function App() {
                 <mesh position={[0, 0, -SPAWN_STAGE_POSITION_Z - SPAWN_STAGE_LENGTH / 2]}>
                   <boxGeometry args={[SPAWN_STAGE_WIDTH, 0.01, SPAWN_STAGE_LENGTH]} />
                   <meshBasicMaterial color="white" transparent opacity={0.7} />
-                </mesh>
+                </mesh> */}
               </XROrigin>
 
               <Router />

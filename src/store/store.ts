@@ -1,16 +1,19 @@
 import SabersStore from './SabersStore';
 import { CurrentSongStore } from './CurrentSong';
 import { action, makeObservable, observable } from 'mobx';
+import { DataStore } from './DataStore';
 
 export class GameStore {
   state: 'loading' | 'menu' | 'map-pause' | 'map-playing' | 'map-loading' | 'map-loaded' | 'map-end' = 'loading';
 
   sabers: SabersStore;
   currentSong: CurrentSongStore;
+  data: DataStore;
 
   constructor() {
     this.sabers = new SabersStore(this);
     this.currentSong = new CurrentSongStore(this);
+    this.data = new DataStore(this);
 
     makeObservable(this, {
       state: observable,

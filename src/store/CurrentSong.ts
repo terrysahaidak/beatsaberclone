@@ -47,6 +47,10 @@ export class CurrentSongStore {
       blocks: observable,
       walls: observable,
       setCurrentPosition: action,
+      pushBlock: action,
+      pushWall: action,
+      loadMap: action,
+      onCollision: action,
     });
   }
 

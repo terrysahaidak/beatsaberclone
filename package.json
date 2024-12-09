@@ -17,6 +17,8 @@
     "@react-three/fiber": "8.17.10",
     "@react-three/postprocessing": "2.16.3",
     "@react-three/uikit": "^0.8.4",
+    "@react-three/uikit-default": "^0.8.4",
+    "@react-three/uikit-lucide": "^0.8.4",
     "@react-three/xr": "^6.4.10",
     "@types/howler": "^2.2.12",
     "@types/three": "0.170.0",

@@ -12,6 +12,7 @@ import { Howl } from 'howler';
 import { Blocks } from './Blocks';
 import { GRID_PADDING, GRID_X, PLAYER_Y_OFFSET, SONG_OFFSET } from '../constants';
 import { Walls } from './Walls';
+import { PauseMenu } from './ui/PauseMenu';
 
 const loadAudio = (url: string): Promise<Howl> => {
   return new Promise((resolve) => {
@@ -124,11 +125,7 @@ export const Map = observer(function Map() {
           Song ended ({gameStore.currentSong.hitCount}/{gameStore.currentSong.totalNotesCount})
         </Text>
       )}
-      {gameStore.state === 'map-pause' && (
-        <Text color={0xffa276} fontSize={0.3} position={[0, 2, -3]}>
-          Press again to reset
-        </Text>
-      )}
+      {gameStore.state === 'map-pause' && <PauseMenu />}
     </XROrigin>
   );
 });

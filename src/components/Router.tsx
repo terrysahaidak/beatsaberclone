@@ -8,7 +8,7 @@ export const Router = observer(function Router() {
     case 'loading':
       return null;
     case 'menu':
-      return <Menu text="Press trigger to start" />;
+      return <Menu />;
     default:
       return <Map />;
   }
